@@ -11,7 +11,7 @@
 <p>64位elf，开启了Canary和NX保护</p>
 <p>分析main函数</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586611734293.png" alt="1586611734293" title class>
+                <img src="<http://q8vmvnx98.bkt.clouddn.com/1586611734293.png?imageslim>" alt="1586611734293" title class>
                 <p>1586611734293</p>
             </figure>
 <p>大概是一个自定义的堆分配器，每个堆主要有两个成员：大小与内容指针</p>
@@ -338,14 +338,6 @@
 <p>print(flag)</p>
 <p>flag：A_e4sY_vm!!!</p>
 ]]></content>
-      
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[Pwn-learning-process]]></title>
-      <url>/2019/03/24/Pwn-learning-process/</url>
-      <content type="html"></content>
       
         
     </entry>
