@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>winterze&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="0x0  函数分析载入IDA，F5查看主函数  有三个函数，进一步查看 sub_400839  此函数为VM的初始化过程，6010A0为vm操作码的内容，0xf1代表sub_400738函数，0xf2代表sub_4006B6函数，0xf5代表sub_4006F4函数 unk_6010A0内容（截取部分）   sub_400738（0xf1）  分析可知0xF1代表的是MOV指令，操作数0xE1,0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="winterze&#39;s Blog">
+<meta property="og:url" content="http://yoursite.com/2020/04/16/babyvm/index.html">
+<meta property="og:site_name" content="winterze&#39;s Blog">
+<meta property="og:description" content="0x0  函数分析载入IDA，F5查看主函数  有三个函数，进一步查看 sub_400839  此函数为VM的初始化过程，6010A0为vm操作码的内容，0xf1代表sub_400738函数，0xf2代表sub_4006B6函数，0xf5代表sub_4006F4函数 unk_6010A0内容（截取部分）   sub_400738（0xf1）  分析可知0xF1代表的是MOV指令，操作数0xE1,0">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579175642703.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579176105200.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579177072366.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579177089451.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579177178288.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579178347263.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579179967857.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579176746772.png">
+<meta property="og:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579176715766.png">
+<meta property="og:updated_time" content="2020-03-31T10:07:40.519Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="winterze&#39;s Blog">
+<meta name="twitter:description" content="0x0  函数分析载入IDA，F5查看主函数  有三个函数，进一步查看 sub_400839  此函数为VM的初始化过程，6010A0为vm操作码的内容，0xf1代表sub_400738函数，0xf2代表sub_4006B6函数，0xf5代表sub_4006F4函数 unk_6010A0内容（截取部分）   sub_400738（0xf1）  分析可知0xF1代表的是MOV指令，操作数0xE1,0">
+<meta name="twitter:image" content="c:/Users/dell/AppData/Roaming/Typora/typora-user-images/1579175642703.png">
+  
+    <link rel="alternate" href="/atom.xml" title="winterze&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">winterze&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-babyvm" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/16/babyvm/" class="article-date">
+  <time datetime="2020-04-16T06:32:43.772Z" itemprop="datePublished">2020-04-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="0x0-函数分析"><a href="#0x0-函数分析" class="headerlink" title="0x0  函数分析"></a>0x0  函数分析</h1><p>载入IDA，F5查看主函数</p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579175642703.png" alt="1579175642703"></p>
+<p>有三个函数，进一步查看</p>
+<p><strong>sub_400839</strong></p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176105200.png" alt="1579176105200"></p>
+<p>此函数为VM的初始化过程，6010A0为vm操作码的内容，0xf1代表sub_400738函数，0xf2代表sub_4006B6函数，0xf5代表sub_4006F4函数</p>
+<p><strong>unk_6010A0内容（截取部分）</strong></p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177072366.png" alt="1579177072366"></p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177089451.png" alt="1579177089451"></p>
+<p><strong>sub_400738（0xf1）</strong></p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177178288.png" alt="1579177178288"></p>
+<p>分析可知0xF1代表的是MOV指令，操作数0xE1,0xE2,0xE3,0xE4各自代表不同的寄存器赋值。其中0xE4表示将寄存器赋值给栈s中。</p>
+<p><strong>sub_4006B6  (0xf2)</strong></p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579178347263.png" alt="1579178347263"></p>
+<p>0xf2代表异或， xor，与0x34异或。</p>
+<p>其中a1^=a1[1]^0x34,中a[1]的值为0</p>
+<p><strong>sub_4006F4   (0xf5)</strong></p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579179967857.png" alt="1579179967857"></p>
+<p>0xf5为read()函数</p>
+<p><strong>sub_40094e</strong></p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176746772.png" alt="1579176746772"></p>
+<p>该函数是对6010A0操作码内容的执行，一直到0xf4结束</p>
+<p><strong>sub_400986</strong></p>
+<p><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176715766.png" alt="1579176715766"></p>
+<p>非常明显，这是一个check函数，异或加密后输入内容，与byte_601080的内容进行对比。这里注意的是，我们输入的内容在经过异或加密后存储地址变更为s[0x20]~s[0x2c]。</p>
+<h1 id="0x1-虚拟化指令分析"><a href="#0x1-虚拟化指令分析" class="headerlink" title="0x1 虚拟化指令分析"></a>0x1 虚拟化指令分析</h1><p><strong>unk_6010A0内容</strong></p>
+<p>0xf5,                                                     </p>
+<p>0xf1,0xe1,0x0,0x0,0x0,0x0,             </p>
+<p>0xf2,   </p>
+<p>0xf1,0xe4,0x20,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x1,0x0,0x0,0x0,</p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x21,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x2,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x22,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x3,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x23,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x4,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x24,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x5,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x25,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x6,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x26,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x7,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x27,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x8,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x28,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0x9,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x29,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0xa,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x2a,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0xb,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x2b,0x0,0x0,0x0,</p>
+<p>0xf1,0xe1,0xc,0x0,0x0,0x0, </p>
+<p>0xf2,</p>
+<p>0xf1,0xe4,0x2c,0x0,0x0,0x0,</p>
+<p>0xf4  </p>
+<p>分析结果：</p>
+<p>read</p>
+<p>r1 = s[0]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x20] = r1</p>
+<p>r1 = s[1]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x21] = r1</p>
+<p>r1 = s[2]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x22] = r1</p>
+<p>r1 = s[3]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x23] = r1</p>
+<p>r1 = s[4]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x24] = r1</p>
+<p>r1 = s[5]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x25] = r1</p>
+<p>r1 = s[6]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x26] = r1</p>
+<p>r1 = s[7]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x27] = r1</p>
+<p>r1 = s[8]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x28] = r1</p>
+<p>r1 = s[9]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x29] = r1</p>
+<p>r1 = s[10]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x2a] = r1</p>
+<p>r1 = s[11]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x2b] = r1</p>
+<p>r1 = s[12]</p>
+<p>r1 ^= 0x34</p>
+<p>s[0x2c] = r1</p>
+<p>ret</p>
+<h1 id="0x2-解密"><a href="#0x2-解密" class="headerlink" title="0x2  解密"></a>0x2  解密</h1><p>s=[‘\x75’,’\x6b’,’\x51’,’\x00’,’\x47’,’\x6d’,’\x6b’,’\x42’,’\x59’,’\x15’,’\x15’,’\x15’,]</p>
+<p>flag=’’</p>
+<p>l=len(s)</p>
+<p>s=list(map(ord,s))</p>
+<p>for i in range(l):</p>
+<p>​    num=s[i]^0x34</p>
+<p>​    flag+=chr(num)</p>
+<p>print(flag)</p>
+<p>flag：A_e4sY_vm!!!</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/04/16/babyvm/" data-id="ck92e0aoj0001notyj5d8zi7q" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/04/16/HITCON Trainging lab13/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/24/Pwn-learning-process/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Pwn-learning-process</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/04/16/string/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/16/pwn200/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/16/level3/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/16/int_overflow/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/16/HITCON Trainging lab13/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Ben<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
