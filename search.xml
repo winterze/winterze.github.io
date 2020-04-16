@@ -10,10 +10,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/pwn/heapcreator&apos;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
 <p>64位elf，开启了Canary和NX保护</p>
 <p>分析main函数</p>
-<figure class="image-box">
-                <img src="<http://q8vmvnx98.bkt.clouddn.com/1586611734293.png?imageslim>" alt="1586611734293" title class>
-                <p>1586611734293</p>
-            </figure>
 <p>大概是一个自定义的堆分配器，每个堆主要有两个成员：大小与内容指针</p>
 <ol>
 <li>创建堆，根据用户输入的长度，申请对应内存空间，并利用 read 读取指定长度内容。这里长度没有进行检测，当长度为负数时，会出现任意长度堆溢出的漏洞。当然，前提是可以进行 malloc。此外，这里读取之后并没有设置 NULL。</li>
