@@ -7,7 +7,7 @@
     <title>babyvm | winterze&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="keywords" content>
+    <meta name="keywords" content="vm">
     <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
     <link rel="stylesheet" href="/css/style.css?v=1.4.4">
@@ -109,9 +109,37 @@
             </li>
         
             <li class>
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class>
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class>
               <a href="/archives">
                 <i class="icon icon-lg icon-archives"></i>
                 ARCHIVES
+              </a>
+            </li>
+        
+            <li class>
+              <a href="/about">
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class>
+              <a href="/links">
+                <i class="icon icon-lg icon-link"></i>
+                FRIEND
               </a>
             </li>
         
@@ -148,6 +176,8 @@
 </time>
 
 
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/ctf/">ctf</a></li></ul>
+
             
         </h5>
         
@@ -178,6 +208,8 @@
             <time class="post-time" title="2020-01-16 15:20:26" datetime="2020-01-16T07:20:26.000Z" itemprop="datePublished">2020-01-16</time>
 
             
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/ctf/">ctf</a></li></ul>
+
 
 
             
@@ -325,15 +357,7 @@
 <p>r1 ^= 0x34</p>
 <p>s[0x2c] = r1</p>
 <p>ret</p>
-<h1 id="0x2-解密"><a href="#0x2-解密" class="headerlink" title="0x2  解密"></a>0x2  解密</h1><p>s=[‘\x75’,’\x6b’,’\x51’,’\x00’,’\x47’,’\x6d’,’\x6b’,’\x42’,’\x59’,’\x15’,’\x15’,’\x15’,]</p>
-<p>flag=’’</p>
-<p>l=len(s)</p>
-<p>s=list(map(ord,s))</p>
-<p>for i in range(l):</p>
-<p>​    num=s[i]^0x34</p>
-<p>​    flag+=chr(num)</p>
-<p>print(flag)</p>
-<p>flag：A_e4sY_vm!!!</p>
+<h1 id="0x2-解密"><a href="#0x2-解密" class="headerlink" title="0x2  解密"></a>0x2  解密</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">s=[<span class="string">'\x75'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x51'</span>,<span class="string">'\x00'</span>,<span class="string">'\x47'</span>,<span class="string">'\x6d'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x42'</span>,<span class="string">'\x59'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,]</span><br><span class="line"></span><br><span class="line">flag=<span class="string">''</span></span><br><span class="line"></span><br><span class="line">l=len(s)</span><br><span class="line"></span><br><span class="line">s=list(map(ord,s))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(l):</span><br><span class="line"></span><br><span class="line">​    num=s[i]^<span class="number">0x34</span></span><br><span class="line"></span><br><span class="line">​    flag+=chr(num)</span><br><span class="line"></span><br><span class="line">print(flag)</span><br><span class="line"></span><br><span class="line">flag：A_e4sY_vm!!!</span><br></pre></td></tr></table></figure>
 
         </div>
         
@@ -341,7 +365,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2020-04-16T09:33:53.102Z" itemprop="dateUpdated">2020-04-16 17:33:53</time>
+    最后更新时间：<time datetime="2020-04-18T07:44:34.554Z" itemprop="dateUpdated">2020-04-18 15:44:34</time>
 </span><br>
 
 
@@ -366,29 +390,13 @@
         
         <div class="post-footer">
             
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vm/">vm</a></li></ul>
+
             <div class="page-share-wrap">
     
 
 <div class="page-share" id="pageShare">
     <ul class="reset share-icons">
-      
-      <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/01/16/babyvm/&title=《babyvm》 — winterze's Blog&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/01/16/babyvm/&title=《babyvm》 — winterze's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
-        </a>
-      </li>
       
     </ul>
  </div>
@@ -536,24 +544,6 @@
 
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
-      
-      <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/01/16/babyvm/&title=《babyvm》 — winterze's Blog&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/01/16/babyvm/&title=《babyvm》 — winterze's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
-        </a>
-      </li>
       
     </ul>
  </div>
