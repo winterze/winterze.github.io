@@ -221,59 +221,59 @@
         </div>
         <div class="post-content" id="post-content" itemprop="postContent">
             
-            <h1 id="0x0-函数分析"><a href="#0x0-函数分析" class="headerlink" title="0x0  函数分析"></a>0x0  函数分析</h1><p>载入IDA，F5查看主函数</p>
+            <h2 id="babyvm"><a href="#babyvm" class="headerlink" title="babyvm"></a>babyvm</h2><h3 id="0x0-函数分析"><a href="#0x0-函数分析" class="headerlink" title="0x0  函数分析"></a>0x0  函数分析</h3><p>载入IDA，F5查看主函数</p>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579175642703.png" title="1579175642703" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579175642703.png" alt="1579175642703" title class></a>
+                <a rel="babyvm" href="https://wx1.sbimg.cn/2020/04/20/1579175580774.png" title="1579175642703" data-fancybox="images"><img src="https://wx1.sbimg.cn/2020/04/20/1579175580774.png" alt="1579175642703" title class></a>
                 <p>1579175642703</p>
             </figure>
 <p>有三个函数，进一步查看</p>
 <p><strong>sub_400839</strong></p>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176105200.png" title="1579176105200" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176105200.png" alt="1579176105200" title class></a>
+                <a rel="babyvm" href="https://wx2.sbimg.cn/2020/04/20/1579176105200.png" title="1579176105200" data-fancybox="images"><img src="https://wx2.sbimg.cn/2020/04/20/1579176105200.png" alt="1579176105200" title class></a>
                 <p>1579176105200</p>
             </figure>
 <p>此函数为VM的初始化过程，6010A0为vm操作码的内容，0xf1代表sub_400738函数，0xf2代表sub_4006B6函数，0xf5代表sub_4006F4函数</p>
 <p><strong>unk_6010A0内容（截取部分）</strong></p>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177072366.png" title="1579177072366" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177072366.png" alt="1579177072366" title class></a>
+                <a rel="babyvm" href="https://wx2.sbimg.cn/2020/04/20/1579177072366.png" title="1579177072366" data-fancybox="images"><img src="https://wx2.sbimg.cn/2020/04/20/1579177072366.png" alt="1579177072366" title class></a>
                 <p>1579177072366</p>
             </figure>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177089451.png" title="1579177089451" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177089451.png" alt="1579177089451" title class></a>
+                <a rel="babyvm" href="https://wx2.sbimg.cn/2020/04/20/1579177089451.png" title="1579177089451" data-fancybox="images"><img src="https://wx2.sbimg.cn/2020/04/20/1579177089451.png" alt="1579177089451" title class></a>
                 <p>1579177089451</p>
             </figure>
 <p><strong>sub_400738（0xf1）</strong></p>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177178288.png" title="1579177178288" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177178288.png" alt="1579177178288" title class></a>
+                <a rel="babyvm" href="https://wx1.sbimg.cn/2020/04/20/1579177178288.png" title="1579177178288" data-fancybox="images"><img src="https://wx1.sbimg.cn/2020/04/20/1579177178288.png" alt="1579177178288" title class></a>
                 <p>1579177178288</p>
             </figure>
 <p>分析可知0xF1代表的是MOV指令，操作数0xE1,0xE2,0xE3,0xE4各自代表不同的寄存器赋值。其中0xE4表示将寄存器赋值给栈s中。</p>
 <p><strong>sub_4006B6  (0xf2)</strong></p>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579178347263.png" title="1579178347263" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579178347263.png" alt="1579178347263" title class></a>
+                <a rel="babyvm" href="https://wx1.sbimg.cn/2020/04/20/1579178347263.png" title="1579178347263" data-fancybox="images"><img src="https://wx1.sbimg.cn/2020/04/20/1579178347263.png" alt="1579178347263" title class></a>
                 <p>1579178347263</p>
             </figure>
 <p>0xf2代表异或， xor，与0x34异或。</p>
 <p>其中a1^=a1[1]^0x34,中a[1]的值为0</p>
 <p><strong>sub_4006F4   (0xf5)</strong></p>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579179967857.png" title="1579179967857" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579179967857.png" alt="1579179967857" title class></a>
+                <a rel="babyvm" href="https://wx2.sbimg.cn/2020/04/20/1579179967857.png" title="1579179967857" data-fancybox="images"><img src="https://wx2.sbimg.cn/2020/04/20/1579179967857.png" alt="1579179967857" title class></a>
                 <p>1579179967857</p>
             </figure>
 <p>0xf5为read()函数</p>
 <p><strong>sub_40094e</strong></p>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176746772.png" title="1579176746772" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176746772.png" alt="1579176746772" title class></a>
+                <a rel="babyvm" href="https://wx2.sbimg.cn/2020/04/20/1579176746772.png" title="1579176746772" data-fancybox="images"><img src="https://wx2.sbimg.cn/2020/04/20/1579176746772.png" alt="1579176746772" title class></a>
                 <p>1579176746772</p>
             </figure>
 <p>该函数是对6010A0操作码内容的执行，一直到0xf4结束</p>
 <p><strong>sub_400986</strong></p>
 <figure class="image-box">
-                <a rel="babyvm" href="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176715766.png" title="1579176715766" data-fancybox="images"><img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176715766.png" alt="1579176715766" title class></a>
+                <a rel="babyvm" href="https://wx2.sbimg.cn/2020/04/20/1579176715766.png" title="1579176715766" data-fancybox="images"><img src="https://wx2.sbimg.cn/2020/04/20/1579176715766.png" alt="1579176715766" title class></a>
                 <p>1579176715766</p>
             </figure>
 <p>非常明显，这是一个check函数，异或加密后输入内容，与byte_601080的内容进行对比。这里注意的是，我们输入的内容在经过异或加密后存储地址变更为s[0x20]~s[0x2c]。</p>
-<h1 id="0x1-虚拟化指令分析"><a href="#0x1-虚拟化指令分析" class="headerlink" title="0x1 虚拟化指令分析"></a>0x1 虚拟化指令分析</h1><p><strong>unk_6010A0内容</strong></p>
+<h3 id="0x1-虚拟化指令分析"><a href="#0x1-虚拟化指令分析" class="headerlink" title="0x1 虚拟化指令分析"></a>0x1 虚拟化指令分析</h3><p><strong>unk_6010A0内容</strong></p>
 <p>0xf5,                                                     </p>
 <p>0xf1,0xe1,0x0,0x0,0x0,0x0,             </p>
 <p>0xf2,   </p>
@@ -357,7 +357,7 @@
 <p>r1 ^= 0x34</p>
 <p>s[0x2c] = r1</p>
 <p>ret</p>
-<h1 id="0x2-解密"><a href="#0x2-解密" class="headerlink" title="0x2  解密"></a>0x2  解密</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">s=[<span class="string">'\x75'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x51'</span>,<span class="string">'\x00'</span>,<span class="string">'\x47'</span>,<span class="string">'\x6d'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x42'</span>,<span class="string">'\x59'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,]</span><br><span class="line"></span><br><span class="line">flag=<span class="string">''</span></span><br><span class="line"></span><br><span class="line">l=len(s)</span><br><span class="line"></span><br><span class="line">s=list(map(ord,s))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(l):</span><br><span class="line"></span><br><span class="line">​    num=s[i]^<span class="number">0x34</span></span><br><span class="line"></span><br><span class="line">​    flag+=chr(num)</span><br><span class="line"></span><br><span class="line">print(flag)</span><br><span class="line"></span><br><span class="line">flag：A_e4sY_vm!!!</span><br></pre></td></tr></table></figure>
+<h3 id="0x2-解密"><a href="#0x2-解密" class="headerlink" title="0x2  解密"></a>0x2  解密</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">s=[<span class="string">'\x75'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x51'</span>,<span class="string">'\x00'</span>,<span class="string">'\x47'</span>,<span class="string">'\x6d'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x42'</span>,<span class="string">'\x59'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,]</span><br><span class="line"></span><br><span class="line">flag=<span class="string">''</span></span><br><span class="line"></span><br><span class="line">l=len(s)</span><br><span class="line"></span><br><span class="line">s=list(map(ord,s))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(l):</span><br><span class="line"></span><br><span class="line">​    num=s[i]^<span class="number">0x34</span></span><br><span class="line"></span><br><span class="line">​    flag+=chr(num)</span><br><span class="line"></span><br><span class="line">print(flag)</span><br><span class="line"></span><br><span class="line">flag：A_e4sY_vm!!!</span><br></pre></td></tr></table></figure>
 
         </div>
         
@@ -365,7 +365,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2020-04-18T07:44:34.554Z" itemprop="dateUpdated">2020-04-18 15:44:34</time>
+    Last updated: <time datetime="2020-04-20T13:38:30.618Z" itemprop="dateUpdated">2020-04-20 21:38:30</time>
 </span><br>
 
 
@@ -442,7 +442,7 @@
         <aside class="post-widget">
             <nav class="post-toc-wrap" id="post-toc">
                 <strong>目录</strong>
-                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#0x0-函数分析"><span class="post-toc-number">1.</span> <span class="post-toc-text">0x0  函数分析</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#0x1-虚拟化指令分析"><span class="post-toc-number">2.</span> <span class="post-toc-text">0x1 虚拟化指令分析</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#0x2-解密"><span class="post-toc-number">3.</span> <span class="post-toc-text">0x2  解密</span></a></li></ol>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#babyvm"><span class="post-toc-number">1.</span> <span class="post-toc-text">babyvm</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#0x0-函数分析"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">0x0  函数分析</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#0x1-虚拟化指令分析"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">0x1 虚拟化指令分析</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#0x2-解密"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">0x2  解密</span></a></li></ol></li></ol>
             </nav>
             <div class="toc-bar"><div>
         </div></div></aside>

